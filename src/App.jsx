@@ -60,7 +60,7 @@ function App() {
     }
   }
 
-  // Check if proxy is connected - simple IP:port comparison
+  // Check if proxy is connected
   const isProxyConnected = (proxy) => {
     return isConnected && 
            selectedProxy && 
