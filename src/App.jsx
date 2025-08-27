@@ -60,6 +60,14 @@ function App() {
     }
   }
 
+  // Check if proxy is connected - simple IP:port comparison
+  const isProxyConnected = (proxy) => {
+    return isConnected && 
+           selectedProxy && 
+           proxy.ip === selectedProxy.ip && 
+           proxy.port === selectedProxy.port;
+  }
+
   // Format last updated time
   const formatLastUpdated = (timestamp) => {
     if (!timestamp) return ''
@@ -193,43 +201,39 @@ function App() {
             </div>
           ) : (
             <div className="servers-grid">
-              {proxyServers.map((proxy) => (
-                <div
-                  key={proxy.id}
-                  className={`server-card ${selectedProxy?.id === proxy.id ? 'selected' : ''}`}
-                  onClick={() => handleProxySelect(proxy)}
-                >
-                  <div className="server-header">
-                    <span className="server-ip">{proxy.ip}:{proxy.port}</span>
-                    <span className="server-type">{proxy.type}</span>
-                  </div>
-                  <div className="server-details">
-                    <span>{proxy.country}</span>
-                    {proxy.speed && proxy.speed !== 'Unknown' && (
-                      <span style={{ 
-                        fontSize: '0.8rem', 
-                        color: proxy.speed === 'Fast' ? '#38a169' : '#d69e2e' 
-                      }}>
-                        {proxy.speed}
-                      </span>
-                    )}
-                    {selectedProxy?.id === proxy.id && isConnected && (
-                      <span style={{ color: '#38a169', fontWeight: '600' }}>
-                        ✓ Connected
-                      </span>
-                    )}
-                  </div>
-                  {proxy.uptime && proxy.uptime !== 'Unknown' && (
-                    <div style={{ 
-                      fontSize: '0.75rem', 
-                      color: '#666', 
-                      marginTop: '5px' 
-                    }}>
-                      Uptime: {proxy.uptime}
+              {proxyServers.map((proxy) => {
+                const isCurrentlyConnected = isProxyConnected(proxy);
+                
+                return (
+                  <div
+                    key={proxy.id}
+                    className={`server-card ${isCurrentlyConnected ? 'selected' : ''}`}
+                    onClick={() => handleProxySelect(proxy)}
+                  >
+                    <div className="server-header">
+                      <span className="server-ip">{proxy.ip}:{proxy.port}</span>
+                      <span className="server-type">{proxy.type}</span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    <div className="server-details">
+                      <span>{proxy.country}</span>
+                      {isCurrentlyConnected && (
+                        <span style={{ color: '#38a169', fontWeight: '600' }}>
+                          ✓ Connected
+                        </span>
+                      )}
+                    </div>
+                    {proxy.uptime && proxy.uptime !== 'Unknown' && (
+                      <div style={{ 
+                        fontSize: '0.75rem', 
+                        color: '#666', 
+                        marginTop: '5px' 
+                      }}>
+                        Uptime: {proxy.uptime}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
